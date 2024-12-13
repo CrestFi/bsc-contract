@@ -1,0 +1,10 @@
+{
+  "name": "crestfi-bsc-contract",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@opengsn/contracts": "^3.0.0-beta.6",
+    "@openzeppelin/contracts": "^5.1.0",
+    "@openzeppelin/contracts-upgradeable": "^5.1.0",
+    "hardhat": "^2.22.17"
+  }
+}
