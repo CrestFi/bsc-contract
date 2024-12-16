@@ -178,7 +178,7 @@ contract Core is
         __Ownable_init(_msgSender());
         __AccessControl_init();
         __Pausable_init();
-        grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setRoleAdmin(WHITELIST_ROLE, DEFAULT_ADMIN_ROLE);
     }
 

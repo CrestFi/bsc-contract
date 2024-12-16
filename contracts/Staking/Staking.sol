@@ -42,7 +42,7 @@ contract Staking is
     }
 
     uint256[] private streamFee;
-    uint256 private constant MAX_FEE = 25;
+    uint256 private constant MAX_FEE = 100;
     mapping(address => uint256) public noOfTokenStakedByUser;
     uint256 public totalStakedToken;
     uint256[] private stakingTiers;
@@ -55,7 +55,7 @@ contract Staking is
         tokenAddress = _tokenAddress;
         __Ownable_init(_msgSender());
         __AccessControl_init();
-        grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setRoleAdmin(WHITELISTER_ROLE, DEFAULT_ADMIN_ROLE);
     }
 
@@ -266,6 +266,5 @@ contract Staking is
 
     // Fallback function to receive Ether
     fallback() external payable {}
-
     receive() external payable {}
 }
