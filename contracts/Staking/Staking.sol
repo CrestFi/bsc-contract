@@ -7,7 +7,6 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "hardhat/console.sol";
 
 contract Staking is
     IStaking,
@@ -55,7 +54,7 @@ contract Staking is
         tokenAddress = _tokenAddress;
         __Ownable_init(_msgSender());
         __AccessControl_init();
-        grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setRoleAdmin(WHITELISTER_ROLE, DEFAULT_ADMIN_ROLE);
     }
 
@@ -233,7 +232,8 @@ contract Staking is
                     address(this).balance
                 );
             // Transfers amount of the ETH contract to owner
-            payable(owner()).call{value: amount}("");
+            (bool sent, ) = payable(owner()).call{value: amount}("");
+            require(sent);
         }
 
         emit TokenWithdrawn(_tokenAddress, owner(), amount);
