@@ -16,12 +16,13 @@ contract BulkTransfer is
     OwnableUpgradeable,
     ERC2771Recipient
 {
-
     struct Bulk {
         bytes32 name;
         bytes32 merkleRoots;
         uint8 transferType;
         uint256 startTime;
+        uint256 recurringFrequency;
+        uint256[] startTimes;
         //transfer type 0 for streams
         //transfer type 1 for instant transfer
     }
@@ -31,12 +32,15 @@ contract BulkTransfer is
     error BulkTransferAlreadyStarted();
     error BulkTransferStartTimePast();
     error MissMatchBulkTransferType();
+    error InvalidArrayLength();
+    error MaximumRecurringLength();
 
     mapping(address => uint256) public bulkCount;
     mapping(bytes32 => Bulk) public bulkTransfers;
+    uint256 constant MAX_RECURRING_FREQUENCY = 30;
 
     function initialize() public initializer {
-        __Ownable_init(_msgSender());
+        __Ownable_init(msg.sender);
     }
 
     // Function to create a new Bulk Transfer
@@ -44,20 +48,29 @@ contract BulkTransfer is
         bytes32 _name,
         bytes32 _merkleRoot,
         uint256 _startTime,
-        uint8 _transferType
+        uint8 _transferType,
+        uint256[] calldata _startTimes,
+        uint256 _recurringFrequency
     ) external override {
+        if (
+            _recurringFrequency > MAX_RECURRING_FREQUENCY &&
+            _startTimes.length > MAX_RECURRING_FREQUENCY
+        ) revert MaximumRecurringLength();
         // Checks if the start time is in the past
         if (_startTime <= block.timestamp) revert BulkTransferStartTimePast();
 
         // Calculate the bulkbytes for the new bulk transfer
         bytes32 bulkBytes = _calculateNextBulkBytes(_msgSender());
-
+        if (_recurringFrequency != _startTimes.length)
+            revert InvalidArrayLength();
         // Create a new Bulk struct with the given arguments
         Bulk memory bulk = Bulk({
             name: _name,
             merkleRoots: _merkleRoot,
             startTime: _startTime,
-            transferType: _transferType
+            transferType: _transferType,
+            recurringFrequency: _recurringFrequency,
+            startTimes: _startTimes
         });
 
         // Stores the new bulk transfer in the bulkTransfers mapping
@@ -78,12 +91,22 @@ contract BulkTransfer is
     // Function to update an existing Bulk Transfer
     function updateBulkTransfer(
         bytes32 _name,
-        bytes32 bulkBytes,
+        uint256 bulkTransferIndex,
         bytes32 merkleRoot,
-        uint256 startTime
+        uint256 startTime,
+        uint256 _recurringFrequency,
+        uint256[] calldata _startTimes
     ) external override {
+        if (
+            _recurringFrequency > MAX_RECURRING_FREQUENCY &&
+            _startTimes.length > MAX_RECURRING_FREQUENCY
+        ) revert MaximumRecurringLength();
+
+        bytes32 bulkBytes = calculateBulkBytes(_msgSender(), bulkTransferIndex);
         // Checkss if the start time is in the future
         if (startTime <= block.timestamp) revert BulkTransferStartTimePast();
+        if (_recurringFrequency != _startTimes.length)
+            revert InvalidArrayLength();
 
         // Checkss if the merkle root is empty
         if (bulkTransfers[bulkBytes].merkleRoots == 0) revert EmptyMerkleRoot();
@@ -97,11 +120,30 @@ contract BulkTransfer is
             name: _name,
             merkleRoots: merkleRoot,
             startTime: startTime,
-            transferType: bulkTransfers[bulkBytes].transferType
+            transferType: bulkTransfers[bulkBytes].transferType,
+            recurringFrequency: _recurringFrequency,
+            startTimes: _startTimes
         });
 
         // Emit update of the bulk transfer event
         emit UpdatedBulkTransfer(_name, _msgSender(), bulkBytes);
+    }
+
+    // Function to Cancel Bulk Transfer
+
+    function cancelBulkTransfer(uint256 bulkTransferIndex) external override {
+        bytes32 bulkBytes = calculateBulkBytes(_msgSender(), bulkTransferIndex);
+        // Checkss if the merkle root is empty
+        if (bulkTransfers[bulkBytes].merkleRoots == 0) revert EmptyMerkleRoot();
+
+        if (bulkTransfers[bulkBytes].startTime <= block.timestamp)
+            revert BulkTransferAlreadyStarted();
+
+        // empty the existing bulk transfer
+        bulkTransfers[bulkBytes].merkleRoots = 0;
+
+        // Emit update of the bulk transfer event
+        emit CancelledBulkTransfer(_msgSender(), bulkBytes);
     }
 
     // Function to verify an instant bulk transfer
@@ -127,7 +169,6 @@ contract BulkTransfer is
             revert MissMatchBulkTransferType();
 
         bytes32 leaf;
-
         {
             // Calculate leaf node data using the arguments
             leaf = keccak256(
@@ -230,17 +271,49 @@ contract BulkTransfer is
     // Function to get the start time of a bulk transfer
     function getBulkTransferStartTime(
         address bulkSender,
-        uint256 bulkTransferIndex
+        uint256 bulkTransferIndex,
+        uint256 recurringFrequency
     ) public view override returns (uint256 startTime) {
         bytes32 bulkBytes = calculateBulkBytes(bulkSender, bulkTransferIndex);
-        startTime = bulkTransfers[bulkBytes].startTime;
+        startTime = bulkTransfers[bulkBytes].startTimes[
+            (recurringFrequency - 1)
+        ];
+    }
+
+    function getBulkTransferRecurringFrequency(
+        address bulkSender,
+        uint256 bulkTransferIndex
+    ) public view override returns (uint256 recurringFrequency) {
+        bytes32 bulkBytes = calculateBulkBytes(bulkSender, bulkTransferIndex);
+        recurringFrequency = bulkTransfers[bulkBytes].recurringFrequency;
+    }
+
+    function getBestRecurringFrequencyBasedOnStartTime(
+        address bulkSender,
+        uint256 bulkTransferIndex
+    ) external view override returns (uint256 recurringFrequency) {
+        uint256 maxRecurringFrequency = getBulkTransferRecurringFrequency(
+            bulkSender,
+            bulkTransferIndex
+        );
+        for (uint256 i = 1; i <= maxRecurringFrequency; i++) {
+            if (
+                getBulkTransferStartTime(bulkSender, bulkTransferIndex, i) <=
+                block.timestamp
+            ) {
+                recurringFrequency = i;
+            } else {
+                recurringFrequency = i - 1;
+                break;
+            }
+        }
     }
 
     // Internal function to calculate the bulk bytes for the next bulk transfer
     function _calculateNextBulkBytes(
         address _sender
     ) internal view returns (bytes32) {
-        uint256 newBulkCount = bulkCount[_sender] +(1);
+        uint256 newBulkCount = bulkCount[_sender] + (1);
         return keccak256(abi.encodePacked(_sender, newBulkCount));
     }
 

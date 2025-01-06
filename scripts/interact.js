@@ -7,11 +7,10 @@
 const hre = require("hardhat");
 
 async function main() {
-    const CrestFiCore = await hre.ethers.getContractAt("CrestFiCore", "0x909c96948956303Dc3bc6Ac49445eE9e8195c962");
+    const BulkTransfer = await hre.ethers.getContractAt("BulkTransfer", "0xd869D0f42aA904e6E67dB3532D7C252d71122F39");
 
-    const res = await CrestFiCore.getCrestWalletTokenBalance(["0xE0b9dEa53a90B7a2986356157e2812e5335A4a1D"], ["0x0000000000000000000000000000000000000000", "0x2C3F292dbae16420B441Fd277003a2EbD9eA4ED0"]);
+    await BulkTransfer.createBulkTransfer(["Test", "bd318e1cb094ba7fa8fca7df7947a642d621735828b7e9f66afd7bd0e650009d", 1736982356, 1, [1736982356], 1736982356]);
 
-    console.log(res, "===========res=========")
 }
 
 // We recommend this pattern to be able to use async/await everywhere

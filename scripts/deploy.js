@@ -18,10 +18,10 @@ async function main() {
   // await CTNContract.waitForDeployment();
   // console.log("CTN Deployed to: ", CTNContract.target);
 
-  // const BulkTransfer = await hre.ethers.getContractFactory("BulkTransfer");
-  // const BulkTransferContract = await hre.upgrades.deployProxy(BulkTransfer, [], { initializer: 'initialize' });
-  // await BulkTransferContract.waitForDeployment();
-  // console.log("BulkTransfer Deployed to: ", BulkTransferContract.target);
+  const BulkTransfer = await hre.ethers.getContractFactory("BulkTransfer");
+  const BulkTransferContract = await hre.upgrades.deployProxy(BulkTransfer, [], { initializer: 'initialize' });
+  await BulkTransferContract.waitForDeployment();
+  console.log("BulkTransfer Deployed to: ", BulkTransferContract.target);
 
   // const Staking = await hre.ethers.getContractFactory("Staking");
   // const StakingContract = await hre.upgrades.deployProxy(Staking, [CTNContract.target], { initializer: 'initialize' });
@@ -33,10 +33,13 @@ async function main() {
   // await RegistryContract.waitForDeployment();
   // console.log("Registry Deployed to: ", RegistryContract.target);
 
-  const CrestFiCore = await hre.ethers.getContractFactory("CrestFiCore");
-  const CrestFiCoreContract = await hre.upgrades.deployProxy(CrestFiCore, ["0xfb7cfF2d7a811Bed4C52d1A96661E386a860F3d2", "0xd869D0f42aA904e6E67dB3532D7C252d71122F39", "0xa33a7d4553565724841cdAeCC5DDD4638A47C855"], { initializer: 'initialize' });
-  await CrestFiCoreContract.waitForDeployment();
-  console.log("CrestFiCore Deployed to: ", CrestFiCoreContract.target);
+  // const CrestFiCore = await hre.ethers.getContractFactory("CrestFiCore");
+  // const CrestFiCoreContract = await hre.upgrades.deployProxy(CrestFiCore, ["0xfb7cfF2d7a811Bed4C52d1A96661E386a860F3d2", "0xd869D0f42aA904e6E67dB3532D7C252d71122F39", "0xa33a7d4553565724841cdAeCC5DDD4638A47C855"], { initializer: 'initialize' });
+  // await CrestFiCoreContract.waitForDeployment();
+  // console.log("CrestFiCore Deployed to: ", CrestFiCoreContract.target);
+
+  const CrestFiCore = await hre.ethers.getContractAt("CrestFiCore", "0x8245C7F00dC9ed3f5F682319560f67D275704168");
+  await CrestFiCore.updateBulkTransferContract(BulkTransferContract.target);
 
 }
 

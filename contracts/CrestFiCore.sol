@@ -231,40 +231,40 @@ contract CrestFiCore is
         }
     }
 
-    //Creates a new Zebec wallet for the given wallet address.
+    //Creates a new CrestFi wallet for the given wallet address.
     function _createCrestFiWallet(address walletAddress) internal {
-        // Create a new Zebec wallet with the current timestamp as the creation time
+        // Create a new CrestFi wallet with the current timestamp as the creation time
         CrestFiWallet memory newWallet = CrestFiWallet({
             createTime: block.timestamp,
             streamCount: 0
         });
 
-        // Store the new Zebec wallet in the wallets mapping
+        // Store the new CrestFi wallet in the wallets mapping
         wallets[walletAddress] = newWallet;
 
         // Grant the FUND_WITHDRAW_ROLE to the wallet address
         _grantRole(FUND_WITHDRAW_ROLE, walletAddress);
 
-        // Emits Zebec Wallet Creation Event
+        // Emits CrestFi Wallet Creation Event
         emit CreatedCrestFiWallet(walletAddress);
     }
 
-    // Deposits tokens into a Zebec wallet.
+    // Deposits tokens into a CrestFi wallet.
 
     function depositTokens(
         address crestFiWalletAddress,
         uint256 amount,
         address tokenAddress
     ) external payable override whenNotPaused isWhitelistedToken(tokenAddress) {
-        // If the Zebec wallet does not exist, create a new one
+        // If the CrestFi wallet does not exist, create a new one
         if (wallets[crestFiWalletAddress].createTime == 0)
             _createCrestFiWallet(crestFiWalletAddress);
 
-        // Deposit the tokens into the Zebec wallet
+        // Deposit the tokens into the CrestFi wallet
         _depositToken(crestFiWalletAddress, amount, tokenAddress);
     }
 
-    // Internal function to deposit tokens into a Zebec wallet.
+    // Internal function to deposit tokens into a CrestFi wallet.
     function _depositToken(
         address crestFiWalletAddress,
         uint256 amount,
@@ -298,12 +298,12 @@ contract CrestFiCore is
         );
     }
 
-    // Withdraws tokens from the sender's Zebec wallet to a specified receiver address.
+    // Withdraws tokens from the sender's CrestFi wallet to a specified receiver address.
     function withdrawTokens(
         uint256 amount,
         address tokenAddress
     ) external override whenNotPaused {
-        // Check if the sender's Zebec wallet exists
+        // Check if the sender's CrestFi wallet exists
         if (wallets[_msgSender()].createTime == 0)
             revert CrestFiWalletDoesNotExists(_msgSender());
 
@@ -312,7 +312,7 @@ contract CrestFiCore is
 
         address owner = _msgSender();
 
-        // Check if the sender's Zebec wallet has sufficient token balance for withdrawal
+        // Check if the sender's CrestFi wallet has sufficient token balance for withdrawal
         if (walletTokenBalances[_msgSender()][tokenAddress] < amount)
             revert InSufficientCrestFiWalletAmount(
                 tokenAddress,
@@ -320,7 +320,7 @@ contract CrestFiCore is
                 walletTokenBalances[_msgSender()][tokenAddress]
             );
 
-        // Deduct the token balance of the sender's Zebec wallet
+        // Deduct the token balance of the sender's CrestFi wallet
         walletTokenBalances[_msgSender()][tokenAddress] =
             walletTokenBalances[_msgSender()][tokenAddress] -
             (amount);
@@ -349,19 +349,19 @@ contract CrestFiCore is
         emit WalletWithdrawn(receiver, walletOwner, tokenAddress, amount);
     }
 
-    // Internal function that performs the token withdrawal to the receiver's Zebec wallet.
+    // Internal function that performs the token withdrawal to the receiver's CrestFi wallet.
     function _withdrawTokenInCrestFiWallet(
         address walletOwner,
         address receiver,
         uint256 amount,
         address tokenAddress
     ) internal {
-        // Increase the token balance of the receiver's Zebec wallet
+        // Increase the token balance of the receiver's CrestFi wallet
         walletTokenBalances[receiver][tokenAddress] =
             walletTokenBalances[receiver][tokenAddress] +
             (amount);
 
-        // Emit an event for the token withdrawal to the Zebec wallet
+        // Emit an event for the token withdrawal to the CrestFi wallet
         emit CrestFiWalletWithdrawn(receiver, walletOwner, tokenAddress, amount);
     }
 
@@ -396,7 +396,7 @@ contract CrestFiCore is
         // Check if the token amount is zero
         if (tokenAmount == 0) revert InvalidInstantTransferAmount();
 
-        // Check if the sender's Zebec wallet exists
+        // Check if the sender's CrestFi wallet exists
         if (wallets[_msgSender()].createTime == 0)
             revert CrestFiWalletDoesNotExists(_msgSender());
 
@@ -411,7 +411,7 @@ contract CrestFiCore is
         );
     }
 
-    // Internal function that performs the actual instant token transfer from the sender's Zebec wallet to the receiver.
+    // Internal function that performs the actual instant token transfer from the sender's CrestFi wallet to the receiver.
 
     function _instantTransfer(
         bytes32 name,
@@ -421,7 +421,7 @@ contract CrestFiCore is
         address receiver,
         bool crestFiWalletWithdraw
     ) internal {
-        // Check if the sender's Zebec wallet has sufficient token balance
+        // Check if the sender's CrestFi wallet has sufficient token balance
         uint256 availableAmount = walletTokenBalances[sender][token];
         if (availableAmount < tokenAmount)
             revert InSufficientCrestFiWalletAmount(
@@ -430,12 +430,12 @@ contract CrestFiCore is
                 availableAmount
             );
 
-        // Deduct the transferred tokens from the sender's Zebec wallet
+        // Deduct the transferred tokens from the sender's CrestFi wallet
         walletTokenBalances[sender][token] =
             walletTokenBalances[sender][token] -
             (tokenAmount);
 
-        // Perform the token withdrawal either in the Zebec wallet or directly to the receiver
+        // Perform the token withdrawal either in the CrestFi wallet or directly to the receiver
 
         if (crestFiWalletWithdraw)
             _withdrawTokenInCrestFiWallet(sender, receiver, tokenAmount, token);
@@ -472,7 +472,7 @@ contract CrestFiCore is
         );
     }
 
-    // Creates a stream for transferring tokens from the sender's Zebec wallet to a receiver's address.
+    // Creates a stream for transferring tokens from the sender's CrestFi wallet to a receiver's address.
 
     function createStream(
         bytes32 streamName,
@@ -502,7 +502,7 @@ contract CrestFiCore is
         // Check if the stream end time is valid
         if (streamEndTime <= block.timestamp) revert InvalidStreamEndTime();
 
-        // If the sender's Zebec wallet does not exist, create a new one
+        // If the sender's CrestFi wallet does not exist, create a new one
         if (wallets[_msgSender()].createTime == 0)
             _createCrestFiWallet(_msgSender());
 
@@ -602,7 +602,7 @@ contract CrestFiCore is
         // Check if the stream end time is valid
         if (streamEndTime <= block.timestamp) revert InvalidStreamEndTime();
 
-        // Create a Zebec wallet for the sender if it doesn't exist
+        // Create a CrestFi wallet for the sender if it doesn't exist
         if (wallets[_msgSender()].createTime == 0)
             _createCrestFiWallet(_msgSender());
 
@@ -631,7 +631,7 @@ contract CrestFiCore is
             streamParam
         );
 
-        // Emit an event indicating the successful creation of the Zebec wallet and stream
+        // Emit an event indicating the successful creation of the CrestFi wallet and stream
         emit CreatedCrestFiWalletAndStreamed(
             _msgSender(),
             streamAddress,
@@ -653,7 +653,7 @@ contract CrestFiCore is
         uint256 streamEndTime,
         uint8 streamParam
     ) internal returns (bytes32 streamAddress) {
-        // Retrieve the sender's Zebec wallet
+        // Retrieve the sender's CrestFi wallet
         CrestFiWallet storage senderWallet = wallets[streamSender];
 
         // Calculate the stream address
@@ -691,7 +691,7 @@ contract CrestFiCore is
         // Store the stream in the streams mapping using the generated address as the key
         streams[streamAddress] = currentStream;
 
-        // Increment the stream count of the sender's Zebec wallet
+        // Increment the stream count of the sender's CrestFi wallet
         senderWallet.streamCount = senderWallet.streamCount + (1);
 
         // Emit an event indicating the successful creation of the stream
@@ -748,7 +748,7 @@ contract CrestFiCore is
                 streamAmount
             );
 
-        // Check if the withdrawal amount exceeds the balance in the Zebec wallet
+        // Check if the withdrawal amount exceeds the balance in the CrestFi wallet
         if (withdrawAmount > walletTokenBalances[originCrestFiWallet][token])
             revert InSufficientCrestFiWalletAmount(
                 token,
@@ -783,7 +783,7 @@ contract CrestFiCore is
         (uint256 streamFee, uint256 actualWithdrawAmount) = CoreUtilsLibrary
             .calculateAmount(staking, withdrawAmount, _msgSender(), token);
 
-        // Deduct the withdrawal amount from the balance in the Zebec wallet
+        // Deduct the withdrawal amount from the balance in the CrestFi wallet
         walletTokenBalances[originCrestFiWallet][token] =
             walletTokenBalances[originCrestFiWallet][token] -
             (withdrawAmount);
@@ -793,7 +793,7 @@ contract CrestFiCore is
         // Perform the token withdrawal from the staking contract
         _withdrawToken(originCrestFiWallet, address(staking), streamFee, token);
 
-        // Perform the token withdrawal either in the Zebec wallet or directly to the receiver
+        // Perform the token withdrawal either in the CrestFi wallet or directly to the receiver
         if (crestFiWalletWithdraw)
             _withdrawTokenInCrestFiWallet(
                 originCrestFiWallet,
@@ -1204,7 +1204,7 @@ contract CrestFiCore is
         );
     }
 
-    // Retrieves the token balances of a Zebec wallet for multiple token addresses.
+    // Retrieves the token balances of a CrestFi wallet for multiple token addresses.
 
     function getCrestFiWalletTokenBalance(
         address[] calldata sender,
@@ -1266,7 +1266,7 @@ contract CrestFiCore is
         return tokenBalances;
     }
 
-    // Grants approval to spend tokens from the Zebec wallet for a spender.
+    // Grants approval to spend tokens from the CrestFi wallet for a spender.
 
     function fundApproval(
         address spender,
@@ -1276,11 +1276,11 @@ contract CrestFiCore is
         // Check if the spender address is not zero
         if (spender == address(0)) revert InvalidZeroAddress();
 
-        // Check if the Zebec wallet exists
+        // Check if the CrestFi wallet exists
         if (wallets[_msgSender()].createTime == 0)
             revert CrestFiWalletDoesNotExists(_msgSender());
 
-        // Check if the Zebec wallet has sufficient balance of the token
+        // Check if the CrestFi wallet has sufficient balance of the token
         if (walletTokenBalances[_msgSender()][tokenAddress] < amount)
             revert InSufficientCrestFiWalletAmount(
                 tokenAddress,
@@ -1371,7 +1371,7 @@ contract CrestFiCore is
         emit FundTransfer(from, to, tokenAddress, amount);
     }
 
-    //Calculates the unique stream bytes using the Zebec wallet address and stream count.
+    //Calculates the unique stream bytes using the CrestFi wallet address and stream count.
 
     function calculateStreamBytes(
         address crestFiWallet,
@@ -1397,7 +1397,7 @@ contract CrestFiCore is
         minimumDeposit = new uint256[](tokenAddressLength);
         outgoingStreamBalance = new uint256[](tokenAddressLength);
 
-        // Iterate over the streams in the Zebec wallet
+        // Iterate over the streams in the CrestFi wallet
         for (uint256 i; i < wallets[crestFiWallet].streamCount; ++i) {
             // Iterate over the token addresses
             for (uint256 j; j < tokenAddressLength; ++j) {
