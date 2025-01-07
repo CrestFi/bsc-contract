@@ -247,7 +247,7 @@ contract Registry is IRegistry, ERC721Burnable, AdminControl {
     // Heco Name Service (.ht)
     constructor() ERC721("BSC Name Service (.bnb)", "TD") {
         _mint(
-            address(0xE0b9dEa53a90B7a2986356157e2812e5335A4a1D),
+            address(msg.sender),
             _BNB_ROOT_HASH
         );
         _tokenURIs[_BNB_ROOT_HASH] = "bnb";
