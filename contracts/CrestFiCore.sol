@@ -21,8 +21,6 @@ import "./libs/BulkTransferLibrary.sol";
 import "./interface/IFundTransfer.sol";
 import "./interface/IRegistry.sol";
 
-import "hardhat/console.sol";
-
 contract CrestFiCore is
     ICore,
     IFundTransfer,
@@ -205,9 +203,7 @@ contract CrestFiCore is
         address[] memory tokens,
         bool[] memory isWhitelisted
     ) external override {
-        console.log("hi");
         _checkRole(WHITELIST_ROLE, _msgSender());
-        console.log("here");
 
         uint tokensLength = tokens.length;
         uint isWhitelistedLength = isWhitelisted.length;
