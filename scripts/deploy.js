@@ -24,7 +24,7 @@ async function main() {
   console.log("BulkTransfer Deployed to: ", BulkTransferContract.target);
 
   const Staking = await hre.ethers.getContractFactory("Staking");
-  const StakingContract = await hre.upgrades.deployProxy(Staking, [CTNContract.target], { initializer: 'initialize' });
+  const StakingContract = await hre.upgrades.deployProxy(Staking, [CFTContract.target], { initializer: 'initialize' });
   await StakingContract.waitForDeployment();
   console.log("Staking Deployed to: ", StakingContract.target);
 
