@@ -5,7 +5,6 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 const hre = require("hardhat");
-
 async function main() {
 
   // const USDT = await hre.ethers.getContractFactory("USDT");
@@ -38,6 +37,15 @@ async function main() {
   await CrestFiCoreContract.waitForDeployment();
   console.log("CrestFiCore Deployed to: ", CrestFiCoreContract.target);
 
+}
+
+async function verify_contract() {
+  await hre.run("verify:verify", {
+    address: "0x912688eBBf5d9FE1CcbDFBF281b55ba3AD31F450",
+    constructorArguments: [],
+  });
+
+  console.log("Contract verified successfully!");
 }
 
 main().catch((error) => {

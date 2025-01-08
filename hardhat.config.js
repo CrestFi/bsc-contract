@@ -5,6 +5,7 @@ require("dotenv").config();
 
 const {
   API_URL_BNB,
+  MAIN_API_URL_BNB,
   PRIVATE_KEY,
 } = process.env;
 // This is a sample Hardhat task. To learn how to create your own go to
@@ -45,7 +46,7 @@ module.exports = {
     enabled: true
   },
 
-  defaultNetwork: "hardhat",
+  defaultNetwork: "bsc_mainnet",
   networks: {
     hardhat: {},
     bsc_testnet: {
@@ -53,11 +54,17 @@ module.exports = {
       allowUnlimitedContractSize: true,
       accounts: [`0x${PRIVATE_KEY}`],
     },
+    bsc_mainnet: {
+      url: MAIN_API_URL_BNB,
+      allowUnlimitedContractSize: true,
+      accounts: [`0x${PRIVATE_KEY}`],
+      gasPrice: 1000000000,
+    },
   },
   etherscan: {
     apiKey: {
-      bsc: "IVJRG3JPZ1A8RPU6CTP9P3Z7ZZ5USC6JUM",
-      bscTestnet: "IVJRG3JPZ1A8RPU6CTP9P3Z7ZZ5USC6JUM",
+      bsc: "6PK7F5P5MUYI2QYXSAEWSZYWQ4HI63KK29",
+      bscTestnet: "6PK7F5P5MUYI2QYXSAEWSZYWQ4HI63KK29",
     },
   },
 };
