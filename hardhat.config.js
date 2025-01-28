@@ -46,7 +46,7 @@ module.exports = {
     enabled: true
   },
 
-  defaultNetwork: "bsc_mainnet",
+  defaultNetwork: "bsc_testnet",
   networks: {
     hardhat: {},
     bsc_testnet: {

@@ -30,3 +30,6 @@ Staking Deployed to:  0x8f01c8b39588C2F5F7AF535b69c26807d527D7BA
 Registry Deployed to:  0x5EFAb734D662cd25005f19d930feca3aF2D5DDFe
 CrestFiCore Deployed to:  0x86277014475162FAa110FC38BdFc6e87467506ed
     0x912688ebbf5d9fe1ccbdfbf281b55ba3ad31f450
+
+GnosisSafeL2 Deployed to:  0x1E3a0D5915b116Ce3a6C33d89bFbf60dBd34fE9d
+GnosisSafeProxyFactory Deployed to:  0xDf694F6a3d29F46243929e3A51821Be9463C728e
