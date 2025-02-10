@@ -5,6 +5,7 @@ require("dotenv").config();
 
 const {
   API_URL_BNB,
+  API_URL_BASE,
   MAIN_API_URL_BNB,
   PRIVATE_KEY,
 } = process.env;
@@ -46,7 +47,7 @@ module.exports = {
     enabled: true
   },
 
-  defaultNetwork: "bsc_testnet",
+  defaultNetwork: "base_testnet",
   networks: {
     hardhat: {},
     bsc_testnet: {
@@ -60,11 +61,17 @@ module.exports = {
       accounts: [`0x${PRIVATE_KEY}`],
       gasPrice: 1000000000,
     },
+    base_testnet: {
+      url: API_URL_BASE,
+      allowUnlimitedContractSize: true,
+      accounts: [`0x${PRIVATE_KEY}`],
+    },
   },
   etherscan: {
     apiKey: {
       bsc: "6PK7F5P5MUYI2QYXSAEWSZYWQ4HI63KK29",
       bscTestnet: "6PK7F5P5MUYI2QYXSAEWSZYWQ4HI63KK29",
+      baseSepolia:"R39ZWKAA7K7CFBS9XJ3GPDEHMY33MI4DBR",
     },
   },
 };

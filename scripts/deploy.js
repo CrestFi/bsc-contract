@@ -7,10 +7,10 @@
 const hre = require("hardhat");
 async function main() {
 
-  // const USDT = await hre.ethers.getContractFactory("USDT");
-  // const USDTContract = await USDT.deploy();
-  // await USDTContract.waitForDeployment();
-  // console.log("CTN Deployed to: ", USDTContract.target);
+  const USDT = await hre.ethers.getContractFactory("USDT");
+  const USDTContract = await USDT.deploy();
+  await USDTContract.waitForDeployment();
+  console.log("USDT Deployed to: ", USDTContract.target);
 
   const CFT = await hre.ethers.getContractFactory("CFT");
   const CFTContract = await CFT.deploy();

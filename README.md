@@ -33,3 +33,12 @@ CrestFiCore Deployed to:  0x86277014475162FAa110FC38BdFc6e87467506ed
 
 GnosisSafeL2 Deployed to:  0x1E3a0D5915b116Ce3a6C33d89bFbf60dBd34fE9d
 GnosisSafeProxyFactory Deployed to:  0xDf694F6a3d29F46243929e3A51821Be9463C728e
+
+
+###### Base Sepolia #######
+USDT Deployed to:  0x3005403c8925726E02f939fb2668B99234d30aFB
+CFT Deployed to:  0x8a32120fE150845fdF0a402ce6D31E3D0b51f4d0
+BulkTransfer Deployed to:  0x62cb17b7dcE57d57b3d61D7696906b3d4af4367f
+Staking Deployed to:  0x1Bd92669C3008513D3A3676Ac6a99D032B211162
+Registry Deployed to:  0x18D4294cf4669773C4ef00ac6a526D37db214Fc8
+CrestFiCore Deployed to:  0xB3A26fd6d69df3557Cb5e2CAb117B5a230F35F09
